@@ -265,9 +265,20 @@ table .bg-dark-danger a {
 }
 
 .navbar-brand {
-  font-family: "Grand Hotel", cursive;
-  font-size: 35px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: bold;
+  font-size: 20px;
   color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 50px;
+  padding: 10px 15px;
+}
+
+.navbar-brand-logo {
+  height: 30px;
+  width: auto;
 }
 
 /* EORI: banda de sus în maro episcopiei, nu negru/gri implicit */
