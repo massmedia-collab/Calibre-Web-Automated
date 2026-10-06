@@ -138,14 +138,13 @@ def before_request():
     g.allow_registration = config.config_public_reg
     g.allow_anonymous = config.config_anonbrowse
     g.allow_upload = config.config_uploading
-    # Theme enforcement: light theme fully deprecated, force caliBlur (dark) in runtime
+    # EORI: theme now respects the per-user setting (light is the default/preferred)
     try:
         g.current_theme = getattr(current_user, 'theme', config.config_theme)
         if current_user.is_anonymous and not hasattr(current_user, 'theme'):
             g.current_theme = config.config_theme
     except Exception:
-        g.current_theme = getattr(config, 'config_theme', 1)
-    g.current_theme = 1
+        g.current_theme = getattr(config, 'config_theme', 0)
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',
@@ -2508,11 +2507,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.sidebar_view |= constants.DETAIL_RANDOM
 
     content.role = constants.selected_roles(to_save)
-    # Force dark theme (caliBlur = 1) for new users
-    try:
-        content.theme = 1
-    except Exception:
-        pass
+    # EORI: new users keep the model default (light theme), no forced override
     try:
         if not to_save["name"] or not to_save["email"] or not to_save["password"]:
             log.info("Missing entries on new user")
@@ -2603,10 +2598,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             log.error(ex)
             flash(str(ex), category="error")
         return redirect(url_for('admin.admin'))
-    # Theme update for admin editing user (force dark)
+    # EORI: respect whatever theme the admin actually selected for this user
     if 'theme' in to_save:
         try:
-            content.theme = 1
+            content.theme = int(to_save['theme'])
         except Exception:
             pass
     # Proceed with remaining updates (previously skipped when 'theme' in to_save)

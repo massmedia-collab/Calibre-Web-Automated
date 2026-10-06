@@ -66,7 +66,7 @@ class _Settings(_Base):
     config_certfile = Column(String)
     config_keyfile = Column(String)
     config_trustedhosts = Column(String, default='')
-    config_calibre_web_title = Column(String, default='Calibre-Web Automated')
+    config_calibre_web_title = Column(String, default='Biblioteca Digitală EORI')
     config_books_per_page = Column(Integer, default=60)
     config_random_books = Column(Integer, default=4)
     config_authors_max = Column(Integer, default=0)
@@ -74,7 +74,7 @@ class _Settings(_Base):
     config_title_regex = Column(String,
                                 default=r'^(A|The|An|Der|Die|Das|Den|Ein|Eine'
                                         r'|Einen|Dem|Des|Einem|Eines|Le|La|Les|L\'|Un|Une)\s+')
-    config_theme = Column(Integer, default=1)
+    config_theme = Column(Integer, default=0)  # EORI: light theme by default
 
     config_log_level = Column(SmallInteger, default=logger.DEFAULT_LOG_LEVEL)
     config_logfile = Column(String, default=logger.LOG_TO_STDOUT)
@@ -98,7 +98,7 @@ class _Settings(_Base):
     config_default_role = Column(SmallInteger, default=0)
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)
     config_default_language = Column(String(3), default="all")
-    config_default_locale = Column(String(2), default="en")
+    config_default_locale = Column(String(2), default="ro")
     config_columns_to_ignore = Column(String)
 
     config_denied_tags = Column(String, default="")

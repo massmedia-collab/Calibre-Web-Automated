@@ -283,7 +283,7 @@ class User(UserBase, Base):
     opds_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
     # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
-    theme = Column(Integer, default=1)
+    theme = Column(Integer, default=0)  # EORI: light theme is the default, not caliBlur
     # Auto-send settings for new books
     auto_send_enabled = Column(Boolean, default=False)
     # Allow entering additional email addresses on send-to-eReader
@@ -910,14 +910,7 @@ def migrate_user_table(engine, _session):
         _safe_session_rollback(_session, "user.theme")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 0")
 
-    # Force migration: All users to caliBlur theme (theme=1) for v5.0.0 frontend development
-    try:
-        users_migrated = _session.query(User).filter(User.theme == 0).update({User.theme: 1})
-        if users_migrated > 0:
-            _session.commit()
-            print(f"[theme-migration] Migrated {users_migrated} user(s) from light theme (0) to caliBlur theme (1). The light/legacy theme has been temporarily disabled from v3.2.0 and won't be re-enabled until the release of a new CWA frontend in v5.0.0.", flush=True)
-    except Exception as e:
-        print(f"[theme-migration] Error migrating users to caliBlur theme: {e}", flush=True)
+    # EORI: removed forced theme migration -- light theme is supported and preferred here
         _session.rollback()
 
     # Migration for auto-send feature columns
