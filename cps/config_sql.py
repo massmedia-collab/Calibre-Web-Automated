@@ -584,6 +584,13 @@ def _migrate_database(session, secret_key):
     _Base.metadata.create_all(session.bind)
     _migrate_table(session, _Settings, secret_key)
     _migrate_table(session, _Flask_Settings)
+    # EORI: enforce the light theme globally on every start, same reasoning as the
+    # matching per-user enforcement in ub.py's _migrate_database
+    try:
+        session.query(_Settings).filter(_Settings.config_theme != 0).update({_Settings.config_theme: 0})
+        session.commit()
+    except Exception as e:
+        print(f"[eori-theme] Error enforcing light config_theme: {e}", flush=True)
 
 
 def load_configuration(session, secret_key):

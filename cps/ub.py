@@ -910,8 +910,15 @@ def migrate_user_table(engine, _session):
         _safe_session_rollback(_session, "user.theme")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'theme' Integer DEFAULT 0")
 
-    # EORI: removed forced theme migration -- light theme is supported and preferred here
-        _session.rollback()
+    # EORI: enforce the light theme on every start (mirrors, inverted, the upstream
+    # dark-theme enforcement this fork removed -- something keeps resetting individual
+    # rows to theme=1 across rebuilds and the exact mechanism wasn't found, so this
+    # just unconditionally corrects it every boot instead of chasing it further)
+    try:
+        _session.query(User).filter(User.theme != 0).update({User.theme: 0})
+        _session.commit()
+    except Exception as e:
+        print(f"[eori-theme] Error enforcing light theme: {e}", flush=True)
 
     # Migration for auto-send feature columns
     try:
