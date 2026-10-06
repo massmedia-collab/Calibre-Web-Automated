@@ -156,7 +156,7 @@ def get_visible_magic_shelves_for_user(user_id):
 # These are pre-built shelves that can be created for users as examples/templates
 SYSTEM_SHELF_TEMPLATES = {
     'recently_added': {
-        'name': 'Recently Added',
+        'name': 'Adăugate recent',
         'icon': '⏰',
         'description': 'Books added to your library in the last 30 days',
         'rules': {
@@ -174,7 +174,7 @@ SYSTEM_SHELF_TEMPLATES = {
         }
     },
     'highly_rated': {
-        'name': 'Highly Rated',
+        'name': 'Foarte apreciate',
         'icon': '⭐',
         'description': 'Books with a rating of 8 or higher',
         'rules': {
@@ -210,7 +210,7 @@ SYSTEM_SHELF_TEMPLATES = {
     #     }
     # },
     'currently_reading': {
-        'name': 'Currently Reading',
+        'name': 'În curs de citire',
         'icon': '📖',
         'description': 'Books you are currently reading (synced via KOSync/Kobo)',
         'rules': {
@@ -226,7 +226,7 @@ SYSTEM_SHELF_TEMPLATES = {
         }
     },
     'yet_to_read': {
-        'name': 'Yet to Read',
+        'name': 'De citit',
         'icon': '📚',
         'description': 'Books you haven\'t read yet',
         'rules': {
@@ -242,7 +242,7 @@ SYSTEM_SHELF_TEMPLATES = {
         }
     },
     'recent_publications': {
-        'name': 'Recent Publications',
+        'name': 'Publicații recente',
         'icon': '🌱',
         'description': 'Books published in the last 2 years',
         'rules': {

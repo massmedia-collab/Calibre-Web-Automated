@@ -10,6 +10,7 @@ import sys
 from .iso_language_names import LANGUAGE_NAMES as _LANGUAGE_NAMES
 from . import logger
 from .string_helper import strip_whitespaces
+from flask_babel import gettext as _
 
 log = logger.create()
 
@@ -44,7 +45,7 @@ def get_language_names(locale):
 
 
 def get_language_name(locale, lang_code):
-    UNKNOWN_TRANSLATION = "Unknown"
+    UNKNOWN_TRANSLATION = _("Unknown")
     names = get_language_names(locale)
     if names is None:
         log.error(f"Missing language names for locale: {str(locale)}/{locale.language}")
