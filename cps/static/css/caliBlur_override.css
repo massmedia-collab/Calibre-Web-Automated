@@ -299,3 +299,20 @@ a#advanced_search > span.hidden-sm {
 #books_rand .cover > a:after {
     border-radius: 4px;
 }
+
+/* ====================================================================
+   Identitate vizuală Episcopia Ortodoxă Română a Italiei (DOR)
+   Paletă preluată din aplicația DOR Master Data (frontend/src/styles.css)
+   ==================================================================== */
+:root {
+  --color-primary: #7A2734;        /* maro episcopie, înlocuiește galbenul implicit */
+  --color-secondary: #5C1D27;      /* maro mai închis, pentru accente secundare */
+  --color-secondary-hover: #9B3A48; /* maro deschis, pentru hover */
+}
+
+/* Checkbox-urile foloseau accentul portocaliu implicit, acum maro */
+input[type=checkbox] {accent-color: #7A2734;}
+
+.cover .badge {
+  background-color: #7A2734;
+}
