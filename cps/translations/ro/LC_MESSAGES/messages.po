@@ -1722,6 +1722,11 @@ msgstr "Scanarea duplicatelor necesită o scanare completă inițială, o singur
 msgid "Books"
 msgstr "Cărți"
 
+#: cps/web.py:482
+#, python-format
+msgid "Books (%(num)s)"
+msgstr "Cărți (%(num)s)"
+
 #: cps/render_template.py:76
 msgid "Show recent books"
 msgstr "Afișează cărțile recente"

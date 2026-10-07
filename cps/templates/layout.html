@@ -167,6 +167,9 @@
                 <li><a id="top_admin" data-text="{{_('Settings')}}" href="{{url_for('admin.admin')}}"><span class="glyphicon glyphicon-dashboard"></span> <span class="hidden-sm">{{_('Admin')}}</span></a></li>
               {% endif %}
               <li><a id="refresh-library" style="cursor: pointer;" data-text="{{_('Refresh Library')}}" onclick="refreshLibrary()"><span class="glyphicon glyphicon-refresh"></span> <span class="hidden-sm">{{_('Refresh Library')}}</span></a></li>
+              {% if current_user.role_admin() %}
+                <li><a id="topnav_refresh_cover_cache" class="btn-refresh-cover-cache" style="cursor: pointer;"><span class="glyphicon glyphicon-picture"></span> <span class="hidden-sm">{{_('Refresh Thumbnail Cache')}}</span></a></li>
+              {% endif %}
               {% if g.current_theme == 0 %}
               <li><a id="top_user" data-text="{{_('Account')}}" href="{% if not current_user.is_anonymous %}{{url_for('web.profile')}}{% else %}{{url_for('web.login', next=(request.path + "?" + request.query_string.decode("utf-8")).rstrip("?"))}}{% endif %}"><span class="glyphicon glyphicon-user"></span> <span class="hidden-sm">{{current_user.name}}</span></a></li>
                 {% if not current_user.is_anonymous %}

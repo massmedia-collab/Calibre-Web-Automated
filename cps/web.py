@@ -479,9 +479,9 @@ def render_books_list(data, sort_param, book_id, page):
                                                                 db.Series)
 
         try:
-            title = _(f'Books ({pagination.total_count})')
+            title = _('Books (%(num)s)', num=pagination.total_count)
         except:
-            title = _(f'Books ({cwa_get_num_books_in_library()})')
+            title = _('Books (%(num)s)', num=cwa_get_num_books_in_library())
 
         return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                      title=title, page=website, order=order[1])
