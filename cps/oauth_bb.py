@@ -857,8 +857,13 @@ def init_oauth_blueprints():
             return False
 
         google_info = resp.json()
+        email = (google_info.get("email") or "").lower()
+        if not email.endswith("@dor-italia.it"):
+            flash(_("Acces permis doar pentru conturi @dor-italia.it."), category="error")
+            log.warning("Google OAuth login refuzat - email din afara domeniului: %s", email)
+            return False
         google_user_id = str(google_info["id"])
-        
+
         # Save token to DB
         oauth_update_token(str(oauthblueprints[1]['id']), token, google_user_id)
         
