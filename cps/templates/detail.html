@@ -1,4 +1,5 @@
 {% extends is_xhr|yesno("fragment.html", "layout.html") %}
+{% from 'modal_dialogs.html' import delete_book %}
 {% block header %}
     <meta property="og:type" content="book" />
     <meta property="og:title" content="{{ entry.title|truncate(35) }}" />
