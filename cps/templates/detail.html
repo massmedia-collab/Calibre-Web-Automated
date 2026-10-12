@@ -527,9 +527,10 @@
                                     {% if entry.reader_list and current_user.role_viewer() %}
                                         <a target="_blank"
                                            href="{{ url_for('web.read_book', book_id=entry.id, book_format=entry.reader_list[0]) }}"
-                                           class="btn btn-primary action-icon-btn" role="button"
+                                           class="btn btn-primary" role="button"
                                            title="{{ _('Read in Browser') }}" aria-label="{{ _('Read in Browser') }}">
                                             <span class="glyphicon glyphicon-book"></span>
+                                            <span>&nbsp;{{ _('Read in Browser') }}</span>
                                         </a>
                                     {% endif %}
 
