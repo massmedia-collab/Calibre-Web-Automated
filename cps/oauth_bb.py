@@ -556,7 +556,13 @@ def bind_or_create_eori_user(provider_id, google_user_id, email):
         user.role = constants.ADMIN_USER_ROLES if email in EORI_ADMIN_EMAILS else EORI_DEFAULT_ROLE
         user.sidebar_view = getattr(config, 'config_default_show', 1)
         user.locale = getattr(config, 'config_default_locale', 'en')
-        user.default_language = getattr(config, 'config_default_language', 'all')
+        # Fortat "all", nu config.config_default_language: valoarea globala de-aici e 'ro'
+        # (cod ISO 639-1), dar Calibre stocheaza limbile cu cod ISO 639-2 ('ron') - orice
+        # cont cu default_language='ro' nu vede NICIO carte (mismatch total la filtrare,
+        # cps/db.py's common_filters()). Gasit 2026-10-12: contul admin nou-creat vedea
+        # "Carti (0)" desi biblioteca are 10 carti reale, toate conturile vechi (default
+        # 'all') functionau normal.
+        user.default_language = 'all'
         user.allowed_tags = getattr(config, 'config_allowed_tags', '')
         user.denied_tags = getattr(config, 'config_denied_tags', '')
         user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
