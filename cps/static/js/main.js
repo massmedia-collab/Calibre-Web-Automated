@@ -519,10 +519,15 @@ $(function() {
             }
         });
     });
-    $("#admin_refresh_cover_cache").click(function() {
+    $(".btn-refresh-cover-cache").click(function() {
+        var $btn = $(this);
+        var $label = $btn.find('.btn-label').length ? $btn.find('.btn-label') : $btn;
+        var originalLabel = $label.text();
         confirmDialog("admin_refresh_cover_cache", "GeneralChangeModal", 0, function () {
-            // Show loading state
-            $("#admin_refresh_cover_cache").prop('disabled', true).text('Starting...');
+            // Show loading state (on whichever button — admin page or top navbar — was clicked)
+            // Only the label span's text changes, so the icon span (on the navbar button) survives.
+            $btn.prop('disabled', true);
+            $label.text('Starting...');
             
             // Remove any existing thumbnail notifications
             $("#thumbnail_progress_notification").remove();
@@ -553,7 +558,8 @@ $(function() {
                         pollTaskCompletion(response.task_id);
                     } else {
                         // Re-enable button immediately if no work to do
-                        $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
+                        $btn.prop('disabled', false);
+                        $label.text(originalLabel);
                         
                         // Show simple notification for no work case
                         var alertClass = response.book_count > 0 ? 'alert-info' : 'alert-warning';
@@ -572,8 +578,9 @@ $(function() {
                 },
                 error: function(xhr, status, error) {
                     // Re-enable button
-                    $("#admin_refresh_cover_cache").prop('disabled', false).text('Refresh Thumbnail Cache');
-                    
+                    $btn.prop('disabled', false);
+                    $label.text(originalLabel);
+
                     // Show error message
                     var errorMsg = xhr.responseJSON && xhr.responseJSON.message ? 
                         xhr.responseJSON.message : 
