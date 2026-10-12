@@ -523,6 +523,67 @@ def oauth_update_token(provider_id, token, provider_user_id):
     return backend_resultcode
 
 
+# EORI: conturi Google permise doar pe acest domeniu (vezi verificarea din google_logged_in);
+# cele din lista de mai jos primesc rol complet de admin la prima logare, restul primesc rol
+# normal (descarcare + citire in browser - ROLE_DOWNLOAD|ROLE_VIEWER = 258). Nu exista
+# auto-creare de cont in bind_oauth_or_register (mai jos) pentru providerii Google/GitHub -
+# doar leaga un cont Google de un cont deja existent, altfel refuza. Pentru Biblioteca
+# Digitala EORI vrem auto-creare la prima logare (fara interventie manuala de admin pentru
+# fiecare persoana), de-aia Google foloseste bind_or_create_eori_user() mai jos, nu functia
+# generica de mai jos.
+EORI_ADMIN_EMAILS = {"massmedia@dor-italia.it"}
+EORI_DEFAULT_ROLE = constants.ROLE_DOWNLOAD | constants.ROLE_VIEWER
+
+
+def bind_or_create_eori_user(provider_id, google_user_id, email):
+    """La prima logare Google pe acest domeniu: leaga de un cont existent cu acelasi
+    email, sau creeaza unul nou (rol determinat de EORI_ADMIN_EMAILS). La logarile
+    urmatoare, doar autentifica contul deja legat."""
+    oauth_entry = ub.session.query(ub.OAuth).filter_by(
+        provider=provider_id, provider_user_id=google_user_id,
+    ).first()
+    if oauth_entry and oauth_entry.user:
+        login_user(oauth_entry.user)
+        flash(_("Success! You are now logged in as: %(nickname)s", nickname=oauth_entry.user.name),
+              category="success")
+        return redirect(url_for('web.index'))
+
+    user = ub.session.query(ub.User).filter(ub.User.email == email).first()
+    if not user:
+        user = ub.User()
+        user.name = email
+        user.email = email
+        user.role = constants.ADMIN_USER_ROLES if email in EORI_ADMIN_EMAILS else EORI_DEFAULT_ROLE
+        user.sidebar_view = getattr(config, 'config_default_show', 1)
+        user.locale = getattr(config, 'config_default_locale', 'en')
+        user.default_language = getattr(config, 'config_default_language', 'all')
+        user.allowed_tags = getattr(config, 'config_allowed_tags', '')
+        user.denied_tags = getattr(config, 'config_denied_tags', '')
+        user.allowed_column_value = getattr(config, 'config_allowed_column_value', '')
+        user.denied_column_value = getattr(config, 'config_denied_column_value', '')
+        user.kobo_only_shelves_sync = 0
+        try:
+            ub.session.add(user)
+            ub.session_commit()
+            log.info("Cont EORI creat automat la prima logare Google: %s (admin=%s)",
+                      email, email in EORI_ADMIN_EMAILS)
+        except Exception as ex:
+            log.error("Esec la crearea contului EORI pentru %s: %s", email, ex)
+            ub.session.rollback()
+            flash(_("OAuth system error. Please contact administrator."), category="error")
+            return redirect(url_for('web.login'))
+
+    if not oauth_entry:
+        oauth_entry = ub.OAuth(provider=provider_id, provider_user_id=google_user_id)
+    oauth_entry.user = user
+    ub.session.add(oauth_entry)
+    ub.session_commit()
+
+    login_user(user)
+    flash(_("Success! You are now logged in as: %(nickname)s", nickname=user.name), category="success")
+    return redirect(url_for('web.index'))
+
+
 def bind_oauth_or_register(provider_id, provider_user_id, redirect_url, provider_name):
     """Bind OAuth account to user or handle login"""
     if not provider_user_id:
@@ -866,10 +927,12 @@ def init_oauth_blueprints():
 
         # Save token to DB
         oauth_update_token(str(oauthblueprints[1]['id']), token, google_user_id)
-        
+
         # DIRECT LOGIN: Hijack flow to prevent redirect loop
         # We perform the binding/login logic right here
-        response = bind_oauth_or_register(oauthblueprints[1]['id'], google_user_id, 'google.login', 'google')
+        # EORI: auto-creeaza contul la prima logare, nu doar leaga de unul existent -
+        # vezi bind_or_create_eori_user() de ce bind_oauth_or_register() nu e potrivit aici.
+        response = bind_or_create_eori_user(str(oauthblueprints[1]['id']), google_user_id, email)
         
         # If we got a response (redirect), abort the current request and send it immediately
         # This stops Flask-Dance from doing its own redirect to /link/google
